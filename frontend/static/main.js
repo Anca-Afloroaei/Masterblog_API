@@ -48,10 +48,26 @@ function addPost() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title: postTitle, content: postContent })
     })
-    .then(response => response.json())  // Parse the JSON data from the response
+    //.then(response => response.json())  // Parse the JSON data from the response
+
+    .then(async response => {
+        const data = await response.json();
+        if (!response.ok) {
+            // Show error message in the UI
+            document.getElementById('error-message').textContent = data.error || 'An unknown error occurred.';
+            throw new Error(data.error || 'Request failed');
+        }
+        // Clear any existing error
+        document.getElementById('error-message').textContent = '';
+        return data;
+    })
+
     .then(post => {
         console.log('Post added:', post);
         loadPosts(); // Reload the posts after adding a new one
+        // Added - clear form fields
+        document.getElementById('post-title').value = '';
+        document.getElementById('post-content').value = '';
     })
     .catch(error => console.error('Error:', error));  // If an error occurs, log it to the console
 }
