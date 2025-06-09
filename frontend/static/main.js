@@ -15,10 +15,13 @@ function loadPosts() {
     var baseUrl = document.getElementById('api-base-url').value;
     localStorage.setItem('apiBaseUrl', baseUrl);
 
+    console.log("Loading posts from:", baseUrl + '/posts');
+
     // Use the Fetch API to send a GET request to the /posts endpoint
     fetch(baseUrl + '/posts')
         .then(response => response.json())  // Parse the JSON data from the response
         .then(data => {  // Once the data is ready, we can use it
+            console.log('Fetched posts:', data);
             // Clear out the post container first
             const postContainer = document.getElementById('post-container');
             postContainer.innerHTML = '';
@@ -80,9 +83,29 @@ function deletePost(postId) {
     fetch(baseUrl + '/posts/' + postId, {
         method: 'DELETE'
     })
-    .then(response => {
-        console.log('Post deleted:', postId);
+
+    .then(response => response.json().then(data => ({ status: response.status, body: data })))
+    .then(result => {
+        const messageDiv = document.getElementById('message');
+        if (result.status === 200) {
+            messageDiv.innerText = result.body.message;
+            messageDiv.style.color = "green";
+            // Auto-hide the message after 3-5 seconds
+            setTimeout(() => {
+                messageDiv.innerText = '';
+            }, 4000);
+
+        } else {
+            messageDiv.innerText = result.body.error || "Something went wrong.";
+            messageDiv.style.color = "red";
+        }
+    //.then(response => {
+    //    console.log('Post deleted:', postId);
         loadPosts(); // Reload the posts after deleting one
     })
-    .catch(error => console.error('Error:', error));  // If an error occurs, log it to the console
+    .catch(error => {
+    console.error('Error:', error);  // If an error occurs, log it to the console
+    document.getElementById('message').innerText = "An error occurred.";
+    document.getElementById('message').style.color = "red";
+    });
 }

@@ -10,19 +10,30 @@
 <body>
     <div class="container">
         <h1>📚 Blog Posts</h1>
+
+        <!-- API Base URL Input -->
         <div class="input-field">
             <input type="text" id="api-base-url" placeholder="Enter API Base URL" value="http://127.0.0.1:5002/api">
             <button onclick="loadPosts()">Load Posts</button>
         </div>
+
+        <!-- Post Creation Inputs -->
         <div class="input-field">
             <input type="text" id="post-title" placeholder="Enter Post Title">
             <input type="text" id="post-content" placeholder="Enter Post Content">
             <button onclick="addPost()">Add Post</button>
         </div>
 
-        <!-- Added error to be displayed -->
+
+
+        <!-- Error message display for POST validation -->
         <div id="error-message" style="color: red; margin: 10px 0;"></div>
 
+
+        <!-- Message display for DELETE success/error -->
+        <div id="message" style="margin-top: 10px; font-weight: bold;"></div>
+
+        <!-- Blog post output -->
         <div id="post-container">
             <!-- Blog posts will be inserted here by JavaScript -->
         </div>
