@@ -16,9 +16,9 @@ POSTS = [
 #     return 'Masterblog API is running!'
 
 
-@app.route('/api/posts', methods=['GET'])
-def get_posts():
-    return jsonify(POSTS)
+# @app.route('/api/posts', methods=['GET'])
+# def get_posts():
+#     return jsonify(POSTS)
 
 
 from flask import request  # Make sure this import is at the top if not already
@@ -115,6 +115,29 @@ def search_posts():
             filtered_posts.append(post)
 
     return jsonify(filtered_posts), 200
+
+
+@app.route('/api/posts', methods=['GET'])
+def get_posts():
+    sort_field = request.args.get('sort')
+    sort_direction = request.args.get('direction', 'asc')
+
+    # Validate sort field
+    if sort_field and sort_field not in ['title', 'content']:
+        return jsonify({"error": "Invalid sort field. Must be 'title' or 'content'."}), 400
+
+    # Validate direction
+    if sort_direction and sort_direction not in ['asc', 'desc']:
+        return jsonify({"error": "Invalid sort direction. Must be 'asc' or 'desc'."}), 400
+
+    sorted_posts = POSTS.copy()
+
+    # Apply sorting if valid parameters are provided
+    if sort_field:
+        reverse = (sort_direction == 'desc')
+        sorted_posts.sort(key=lambda x: x[sort_field].lower(), reverse=reverse)
+
+    return jsonify(sorted_posts), 200
 
 
 
