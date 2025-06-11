@@ -21,10 +21,11 @@
         <div class="input-field">
             <input type="text" id="post-title" placeholder="Enter Post Title">
             <input type="text" id="post-content" placeholder="Enter Post Content">
-            <button onclick="addPost()">Add Post</button>
+            <button id="submit-button" onclick="addOrUpdatePost()">Add Post</button>
+            <!-- <button onclick="addPost()">Add Post</button>  -->
+            <!-- Option to cancel edit -->
+            <button id="cancel-edit-button" onclick="resetForm()" style="display: none;">Cancel Edit</button>
         </div>
-
-
 
         <!-- Error message display for POST validation -->
         <div id="error-message" style="color: red; margin: 10px 0;"></div>

@@ -1,3 +1,5 @@
+let editingPostId = null; // Track whether we are editing an existing post
+
 // Function that runs once the window is fully loaded
 window.onload = function() {
     // Attempt to retrieve the API base URL from the local storage
@@ -31,6 +33,7 @@ function loadPosts() {
                 const postDiv = document.createElement('div');
                 postDiv.className = 'post';
                 postDiv.innerHTML = `<h2>${post.title}</h2><p>${post.content}</p>
+                <button onclick="startEdit(${post.id}, '${escapeStr(post.title)}', '${escapeStr(post.content)}')">Edit</button>
                 <button onclick="deletePost(${post.id})">Delete</button>`;
                 postContainer.appendChild(postDiv);
             });
@@ -38,19 +41,34 @@ function loadPosts() {
         .catch(error => console.error('Error:', error));  // If an error occurs, log it to the console
 }
 
+// Helper function to safely pass content into JS event handlers
+function escapeStr(str) {
+    return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+}
+
 // Function to send a POST request to the API to add a new post
-function addPost() {
+function addOrUpdatePost() {   // previously addPost()
     // Retrieve the values from the input fields
     var baseUrl = document.getElementById('api-base-url').value;
     var postTitle = document.getElementById('post-title').value;
     var postContent = document.getElementById('post-content').value;
 
-    // Use the Fetch API to send a POST request to the /posts endpoint
-    fetch(baseUrl + '/posts', {
-        method: 'POST',
+    // For Updating an existing Post
+    const method = editingPostId ? 'PUT' : 'POST';
+    const endpoint = editingPostId ? `${baseUrl}/posts/${editingPostId}` : `${baseUrl}/posts`;
+
+    fetch(endpoint, {
+        method: method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title: postTitle, content: postContent })
     })
+
+    // Use the Fetch API to send a POST request to the /posts endpoint
+//    fetch(baseUrl + '/posts', {
+//        method: 'POST',
+//        headers: { 'Content-Type': 'application/json' },
+//        body: JSON.stringify({ title: postTitle, content: postContent })
+//    })
     //.then(response => response.json())  // Parse the JSON data from the response
 
     .then(async response => {
@@ -68,11 +86,30 @@ function addPost() {
     .then(post => {
         console.log('Post added:', post);
         loadPosts(); // Reload the posts after adding a new one
+        resetForm();
         // Added - clear form fields
-        document.getElementById('post-title').value = '';
-        document.getElementById('post-content').value = '';
+//        document.getElementById('post-title').value = '';
+//        document.getElementById('post-content').value = '';
     })
     .catch(error => console.error('Error:', error));  // If an error occurs, log it to the console
+}
+
+// Function to send a PUT request to the API to update a post
+function startEdit(postId, title, content) {
+    editingPostId = postId;
+    document.getElementById('post-title').value = title;
+    document.getElementById('post-content').value = content;
+    document.getElementById('submit-button').textContent = 'Update Post';
+    document.getElementById('cancel-edit-button').style.display = 'inline-block';
+}
+
+// Helper Function to clear form fields after insertion
+function resetForm() {
+    editingPostId = null;
+    document.getElementById('post-title').value = '';
+    document.getElementById('post-content').value = '';
+    document.getElementById('submit-button').textContent = 'Add Post';
+    document.getElementById('cancel-edit-button').style.display = 'none';
 }
 
 // Function to send a DELETE request to the API to delete a post
