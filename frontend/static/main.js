@@ -35,6 +35,20 @@ function loadPosts() {
                 postDiv.innerHTML = `<h2>${post.title}</h2><p>${post.content}</p>
                 <button onclick="startEdit(${post.id}, '${escapeStr(post.title)}', '${escapeStr(post.content)}')">Edit</button>
                 <button onclick="deletePost(${post.id})">Delete</button>`;
+
+                // The line below should be before the Delete button, replacing the current Edit button line
+//                <button class="edit-button" data-id="${post.id}" data-title="${encodeURIComponent(post.title)}" data-content="${encodeURIComponent(post.content)}">Edit</button>
+
+
+
+                // For adding the Update button - also the commented line above. Still need to work on it
+//                postDiv.querySelector('.edit-button').addEventListener('click', function() {
+//                    const id = this.getAttribute('data-id');
+//                    const title = decodeURIComponent(this.getAttribute('data-title'));
+//                    const content = decodeURIComponent(this.getAttribute('data-content'));
+//                    startEdit(id, title, content);
+//                });
+
                 postContainer.appendChild(postDiv);
             });
         })
