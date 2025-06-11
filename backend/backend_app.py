@@ -25,6 +25,12 @@ from flask import request  # Make sure this import is at the top if not already
 
 @app.route('/api/posts', methods=['POST'])
 def add_post():
+    """
+    Creates a new blog post.
+    Expects JSON body with 'title' and 'content' fields.
+    Returns the created post with a unique ID.
+    For missing or invalid data - 400 Bad Request
+    """
     data = request.get_json()
 
     # Validate input
@@ -65,6 +71,10 @@ def add_post():
 
 @app.route('/api/posts/<int:post_id>', methods=['DELETE'])
 def delete_post(post_id):
+    """
+    Deletes a blog post by its ID.
+    Returns a success message if deleted, or 404 if not found.
+    """
     for post in POSTS:
         if post["id"] == post_id:
             POSTS.remove(post)
@@ -79,6 +89,11 @@ def delete_post(post_id):
 
 @app.route('/api/posts/<int:post_id>', methods=['PUT'])
 def update_post(post_id):
+    """
+    Updates an existing blog post by its ID.
+    Expects JSON body with optional 'title' or 'content'.
+    Returns the updated post or 404 if not found.
+    """
     data = request.get_json()
 
     for post in POSTS:
@@ -99,6 +114,15 @@ def update_post(post_id):
 
 @app.route('/api/posts/search', methods=['GET'])
 def search_posts():
+    """
+    Searches for posts by title and/or content substring.
+
+    Query parameters:
+    - title: substring to search in the title
+    - content: substring to search in the content
+
+    Returns matching posts or an empty list if no match.
+    """
     title_query = request.args.get('title', '').lower()
     content_query = request.args.get('content', '').lower()
 
@@ -119,6 +143,16 @@ def search_posts():
 
 @app.route('/api/posts', methods=['GET'])
 def get_posts():
+    """
+    Retrieves all blog posts, optionally sorted.
+
+    Query parameters:
+    - sort: field to sort by ('title' or 'content')
+    - direction: sort direction ('asc' or 'desc')
+
+    Returns list of posts sorted accordingly or in default order.
+    Responds with 400 Bad Request for invalid sort options.
+    """
     sort_field = request.args.get('sort')
     sort_direction = request.args.get('direction', 'asc')
 
